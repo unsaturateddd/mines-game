@@ -12,6 +12,7 @@ body {
   height: 100%;
   background: #0e1016;
   color: #eef1f6;
+  color-scheme: dark;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
   user-select: none;
   overflow: hidden;
@@ -23,6 +24,8 @@ button {
   background: none;
   border: 0;
   cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 [hidden] { display: none !important; }
@@ -260,29 +263,36 @@ button {
 
 .cell {
   position: relative;
+  cursor: pointer;
   aspect-ratio: 1;
   border-radius: 30%;
-  background:
-    url("../assets/cell.png") center / 112% 112% no-repeat;
+  background-color: #05060a;
+  background-image: url("../assets/cell.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.42));
   overflow: hidden;
   transform: translateZ(0);
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .cell::after {
   content: "";
   position: absolute;
-  inset: 11%;
-  border-radius: 26%;
-  background: radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.62) 0%, rgba(210, 216, 230, 0.16) 40%, transparent 68%);
+  inset: 18%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(190, 198, 214, 0.32) 0%, rgba(140, 150, 170, 0.08) 42%, transparent 70%);
   opacity: 0;
   pointer-events: none;
+  mix-blend-mode: screen;
   transition: opacity 0.3s ease;
 }
 
 .cell.hint::after {
   opacity: 1;
-  animation: pulseHint 1.45s ease-in-out infinite;
+  animation: pulseHint 1.6s ease-in-out infinite;
 }
 
 .cell .bomb-outline {
@@ -576,8 +586,8 @@ button {
 }
 
 @keyframes pulseHint {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.75; }
 }
 
 @keyframes winPop {
