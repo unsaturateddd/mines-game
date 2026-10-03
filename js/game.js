@@ -19,6 +19,7 @@
   const cells = [...boardEl.querySelectorAll(".cell")];
   const rows = [...boardEl.querySelectorAll(".row")];
   const vault = $("vault");
+  const viewport = $("viewport");
   const dots = $("dots");
   const hashSteps = $("hashSteps");
   const prompt = $("prompt");
@@ -81,10 +82,29 @@
     [...dots.children].forEach((d, i) => d.classList.toggle("on", i < state.round));
   }
 
-  function applyShift() {
-    if (state.round >= 1 && state.round < 3) {
-      rows[3 - state.round].classList.add("spent");
-    }
+  function fitBoard() {
+    const box = viewport.getBoundingClientRect();
+    const css = getComputedStyle(viewport);
+    const padX = parseFloat(css.paddingLeft) + parseFloat(css.paddingRight);
+    const padY = parseFloat(css.paddingTop) + parseFloat(css.paddingBottom);
+    const innerW = box.width - padX;
+    const innerH = box.height - padY;
+    const visible = Math.max(1, rows.filter((row) => !row.classList.contains("spent")).length);
+    const colGap = 12;
+    const rowGap = 10;
+    const size = Math.floor(
+      Math.max(72, Math.min((innerW - colGap) / 2, (innerH - rowGap * (visible - 1)) / visible, 198))
+    );
+    boardEl.style.setProperty("--cell", `${size}px`);
+  }
+
+  async function applyShift() {
+    if (state.round < 1 || state.round >= 3) return;
+    const row = rows[3 - state.round];
+    row.classList.add("leaving");
+    await wait(240);
+    row.classList.add("spent");
+    fitBoard();
   }
 
   function clearCells() {
@@ -112,8 +132,9 @@
     againBtn.hidden = mode !== "win";
     if (mode === "idle") {
       vault.classList.remove("is-open", "won");
-      rows.forEach((row) => row.classList.remove("spent"));
+      rows.forEach((row) => row.classList.remove("spent", "leaving"));
     }
+    requestAnimationFrame(fitBoard);
   }
 
   let fxTimer = 0;
@@ -172,12 +193,13 @@
     setBalanceView();
     setMode("playing");
     vault.classList.remove("is-open", "won");
-    rows.forEach((row) => row.classList.remove("spent"));
+    rows.forEach((row) => row.classList.remove("spent", "leaving"));
     clearCells();
     setTotalWin(0, false);
     setDots();
     renderHash();
     showHints();
+    fitBoard();
   }
 
   function finishWin() {
@@ -216,13 +238,13 @@
     renderHash();
     setTotalWin(payoutAt(state.round - 1), true);
 
-    await wait(850);
+    await wait(800);
 
+    if (state.round < 3) await applyShift();
     if (state.round === 1) vault.classList.add("is-open");
 
     if (state.round < 3) {
-      applyShift();
-      await wait(720);
+      await wait(560);
       showHints();
       state.busy = false;
     } else {
@@ -257,9 +279,11 @@
     if (state.mode === "win") resetBoard(true);
   });
 
-  window.addEventListener("resize", () => {});
+  window.addEventListener("resize", fitBoard);
+  new ResizeObserver(fitBoard).observe(viewport);
 
   setMode("idle");
   setBalanceView();
   renderHash();
+  fitBoard();
 })();
