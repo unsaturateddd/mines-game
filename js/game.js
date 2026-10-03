@@ -30,7 +30,10 @@
   const totalWinEl = $("totalWin");
   const fxDom = $("fxDom");
 
-  cells.forEach((cell) => cell.insertAdjacentHTML("beforeend", bombSvg));
+  cells.forEach((cell) => {
+    const back = cell.querySelector(".cell-back");
+    if (back) back.insertAdjacentHTML("beforeend", bombSvg);
+  });
 
   const state = {
     mode: "idle",
@@ -109,7 +112,7 @@
 
   function clearCells() {
     cells.forEach((c) => {
-      c.classList.remove("hint", "win", "bomb");
+      c.classList.remove("hint", "win", "bomb", "is-press");
       c.disabled = false;
     });
   }
@@ -226,6 +229,7 @@
 
     haptic();
     state.busy = true;
+    cell.classList.remove("is-press");
     cells.forEach((c) => c.classList.remove("hint"));
 
     const col = i % 2;
@@ -260,7 +264,24 @@
     setBalanceView();
   }
 
-  cells.forEach((c) => c.addEventListener("click", onCellClick));
+  cells.forEach((c) => {
+    const pressOn = () => {
+      if (c.classList.contains("win") || c.classList.contains("bomb")) return;
+      c.classList.add("is-press");
+    };
+    const pressOff = () => c.classList.remove("is-press");
+    c.addEventListener("pointerdown", pressOn);
+    c.addEventListener("pointerup", pressOff);
+    c.addEventListener("pointerleave", pressOff);
+    c.addEventListener("pointercancel", pressOff);
+    c.addEventListener("click", onCellClick);
+    c.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" || ev.key === " ") {
+        ev.preventDefault();
+        c.click();
+      }
+    });
+  });
   $("playBtn").addEventListener("click", startGame);
   $("betMinus").addEventListener("click", () => changeBet(-1));
   $("betPlus").addEventListener("click", () => changeBet(1));
