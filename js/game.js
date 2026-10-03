@@ -68,9 +68,9 @@
     MULTS.forEach((m, i) => {
       if (i < idx) return;
       const el = document.createElement("div");
-      el.className = "hash-step" + (i === idx ? " is-current" : "");
+      el.className = "hash-step" + (i === idx ? " is-current neon-text-green" : "");
       el.innerHTML = i === idx
-        ? `<span class="payout">${fmtInt(payoutAt(i))}</span><span>${m.toFixed(2)}x</span>`
+        ? `<span class="payout neon-text-green">${fmtInt(payoutAt(i))}</span><span>${m.toFixed(2)}x</span>`
         : `<span>${m.toFixed(2)}x</span>`;
       hashSteps.appendChild(el);
     });
@@ -79,6 +79,7 @@
   function setTotalWin(value, lit) {
     totalWinEl.textContent = `${fmtInt(value)} RUB`;
     totalWinBox.classList.toggle("lit", Boolean(lit));
+    totalWinEl.classList.toggle("neon-text-green", Boolean(lit));
   }
 
   function setDots() {
@@ -93,8 +94,8 @@
     const innerW = box.width - padX;
     const innerH = box.height - padY;
     const visible = Math.max(1, rows.filter((row) => !row.classList.contains("spent")).length);
-    const colGap = 12;
-    const rowGap = 10;
+    const colGap = 14;
+    const rowGap = 16;
     const size = Math.floor(
       Math.max(72, Math.min((innerW - colGap) / 2, (innerH - rowGap * (visible - 1)) / visible, 198))
     );
@@ -112,17 +113,20 @@
 
   function clearCells() {
     cells.forEach((c) => {
-      c.classList.remove("hint", "win", "bomb", "is-press");
+      c.classList.remove("hint", "win", "bomb", "is-press", "pressed", "active");
       c.disabled = false;
     });
   }
 
   function showHints() {
-    cells.forEach((c) => c.classList.remove("hint"));
+    cells.forEach((c) => c.classList.remove("hint", "active"));
     const row = activeRow();
     cells
       .filter((c) => Number(c.dataset.i) === row * 2 || Number(c.dataset.i) === row * 2 + 1)
-      .forEach((c) => c.classList.add("hint"));
+      .forEach((c) => {
+        if (c.classList.contains("win") || c.classList.contains("bomb")) return;
+        c.classList.add("hint", "active");
+      });
   }
 
   function setMode(mode) {
@@ -229,13 +233,20 @@
 
     haptic();
     state.busy = true;
-    cell.classList.remove("is-press");
-    cells.forEach((c) => c.classList.remove("hint"));
+    cell.classList.remove("is-press", "pressed", "hint");
+    cells.forEach((c) => {
+      if (!c.classList.contains("win") && !c.classList.contains("bomb")) {
+        c.classList.remove("hint", "active");
+      }
+    });
 
     const col = i % 2;
     const sibling = cells[row * 2 + (1 - col)];
-    cell.classList.add("win");
-    if (sibling) sibling.classList.add("bomb");
+    cell.classList.add("win", "active");
+    if (sibling) {
+      sibling.classList.remove("active", "hint");
+      sibling.classList.add("bomb");
+    }
 
     state.round += 1;
     setDots();
@@ -267,9 +278,9 @@
   cells.forEach((c) => {
     const pressOn = () => {
       if (c.classList.contains("win") || c.classList.contains("bomb")) return;
-      c.classList.add("is-press");
+      c.classList.add("pressed");
     };
-    const pressOff = () => c.classList.remove("is-press");
+    const pressOff = () => c.classList.remove("pressed");
     c.addEventListener("pointerdown", pressOn);
     c.addEventListener("pointerup", pressOff);
     c.addEventListener("pointerleave", pressOff);

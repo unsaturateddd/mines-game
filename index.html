@@ -6,19 +6,20 @@
   <meta name="theme-color" content="#12141a">
   <title>Mines</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/game-3d.css">
 </head>
 <body>
   <div class="app is-idle" id="app">
     <div class="fx-dom" id="fxDom" aria-hidden="true"></div>
 
     <header class="topnav">
-      <div class="topnav-body">
+      <div class="topnav-body crystal-glass">
         <span class="topnav-gloss"></span>
-        <button class="nav-btn" type="button" aria-label="Меню">
+        <button class="nav-btn crystal-glass" type="button" aria-label="Меню">
           <span class="grid-ico"></span>
         </button>
         <img class="bomb-logo" src="assets/bomb-logo.png" alt="">
-        <button class="nav-btn" type="button" id="musicBtn" aria-label="Музыка">
+        <button class="nav-btn crystal-glass" type="button" id="musicBtn" aria-label="Музыка">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 16.5V6l10-2v10.5a3.5 3.5 0 1 1-2-3.16V6.7L12 8.3v8.2a3.5 3.5 0 1 1-2 0z"/></svg>
         </button>
       </div>
@@ -30,9 +31,9 @@
 
     <div class="field">
       <section class="vault" id="vault">
-        <div class="vault-body">
+        <div class="vault-body crystal-glass">
           <div class="vault-screen">
-            <div class="win-copy" id="winCopy">YOU WIN</div>
+            <div class="win-copy neon-text-green" id="winCopy">YOU WIN</div>
           </div>
         </div>
       </section>
@@ -40,44 +41,56 @@
       <main class="viewport" id="viewport">
         <div class="board" id="board">
           <div class="row" data-row="0">
-            <div class="cell" role="button" tabindex="0" data-i="0" aria-label="Клетка 1">
-              <div class="cell-3d">
-                <div class="cell-face cell-front"></div>
-                <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+            <div class="cell pad-3d-container" role="button" tabindex="0" data-i="0" aria-label="Клетка 1">
+              <div class="pad-3d-inner">
+                <div class="cell-3d">
+                  <div class="cell-face cell-front"></div>
+                  <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+                </div>
               </div>
             </div>
-            <div class="cell" role="button" tabindex="0" data-i="1" aria-label="Клетка 2">
-              <div class="cell-3d">
-                <div class="cell-face cell-front"></div>
-                <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+            <div class="cell pad-3d-container" role="button" tabindex="0" data-i="1" aria-label="Клетка 2">
+              <div class="pad-3d-inner">
+                <div class="cell-3d">
+                  <div class="cell-face cell-front"></div>
+                  <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+                </div>
               </div>
             </div>
           </div>
           <div class="row" data-row="1">
-            <div class="cell" role="button" tabindex="0" data-i="2" aria-label="Клетка 3">
-              <div class="cell-3d">
-                <div class="cell-face cell-front"></div>
-                <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+            <div class="cell pad-3d-container" role="button" tabindex="0" data-i="2" aria-label="Клетка 3">
+              <div class="pad-3d-inner">
+                <div class="cell-3d">
+                  <div class="cell-face cell-front"></div>
+                  <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+                </div>
               </div>
             </div>
-            <div class="cell" role="button" tabindex="0" data-i="3" aria-label="Клетка 4">
-              <div class="cell-3d">
-                <div class="cell-face cell-front"></div>
-                <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+            <div class="cell pad-3d-container" role="button" tabindex="0" data-i="3" aria-label="Клетка 4">
+              <div class="pad-3d-inner">
+                <div class="cell-3d">
+                  <div class="cell-face cell-front"></div>
+                  <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+                </div>
               </div>
             </div>
           </div>
           <div class="row" data-row="2">
-            <div class="cell" role="button" tabindex="0" data-i="4" aria-label="Клетка 5">
-              <div class="cell-3d">
-                <div class="cell-face cell-front"></div>
-                <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+            <div class="cell pad-3d-container" role="button" tabindex="0" data-i="4" aria-label="Клетка 5">
+              <div class="pad-3d-inner">
+                <div class="cell-3d">
+                  <div class="cell-face cell-front"></div>
+                  <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+                </div>
               </div>
             </div>
-            <div class="cell" role="button" tabindex="0" data-i="5" aria-label="Клетка 6">
-              <div class="cell-3d">
-                <div class="cell-face cell-front"></div>
-                <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+            <div class="cell pad-3d-container" role="button" tabindex="0" data-i="5" aria-label="Клетка 6">
+              <div class="pad-3d-inner">
+                <div class="cell-3d">
+                  <div class="cell-face cell-front"></div>
+                  <div class="cell-face cell-back"><span class="cell-mark"></span></div>
+                </div>
               </div>
             </div>
           </div>
@@ -85,9 +98,9 @@
       </main>
     </div>
 
-    <p class="prompt" id="prompt">Выбери сумму ставки и нажми <span class="prompt-play">▶</span></p>
+    <p class="prompt crystal-glass" id="prompt">Выбери сумму ставки и нажми <span class="prompt-play">▶</span></p>
 
-    <div class="hash" id="hash">
+    <div class="hash crystal-glass" id="hash">
       <div class="hash-left">
         <span class="hash-mark"></span>
         <span class="hash-title">Hash</span>
@@ -108,32 +121,32 @@
           </div>
           <button class="step" type="button" id="betPlus" aria-label="Больше">+</button>
         </div>
-        <button class="play-btn" type="button" id="playBtn" aria-label="Старт">
+        <button class="play-btn neon-green-glow" type="button" id="playBtn" aria-label="Старт">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l12-6.5L8 5.5z"/></svg>
         </button>
       </div>
 
       <div class="play-bar" id="playBar" hidden>
-        <button class="side-btn" type="button" aria-label="Кубик">
+        <button class="side-btn crystal-glass" type="button" aria-label="Кубик">
           <svg viewBox="0 0 32 32" aria-hidden="true">
             <path d="M16 4 L27 10.5 V21.5 L16 28 L5 21.5 V10.5 Z" fill="none" stroke="currentColor" stroke-width="1.7"/>
             <path d="M16 4 V28 M5 10.5 L16 17 L27 10.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
           </svg>
         </button>
-        <div class="total-win" id="totalWinBox">
+        <div class="total-win crystal-glass" id="totalWinBox">
           <div class="total-val" id="totalWin">0 RUB</div>
           <div class="total-sub">Общий выигрыш</div>
         </div>
-        <button class="side-btn cash" type="button" id="cashBtn" aria-label="Забрать">$</button>
+        <button class="side-btn cash crystal-glass" type="button" id="cashBtn" aria-label="Забрать">$</button>
       </div>
     </section>
 
-    <button class="again" type="button" id="againBtn" hidden>Ещё раз</button>
+    <button class="again neon-green-glow" type="button" id="againBtn" hidden>Ещё раз</button>
 
     <footer class="footer">
       <button class="back" type="button" id="backBtn">‹ Назад</button>
-      <div class="balance" id="footerBalance">291 020,11 ₽</div>
-      <button class="deposit" type="button" id="depositBtn">Пополнить</button>
+      <div class="balance neon-text-green" id="footerBalance">291 020,11 ₽</div>
+      <button class="deposit neon-green-glow" type="button" id="depositBtn">Пополнить</button>
     </footer>
   </div>
 

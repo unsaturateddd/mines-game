@@ -257,7 +257,7 @@ button {
   overflow: hidden;
   display: flex;
   align-items: center;
-  padding: 12px 8px 14px;
+  padding: 16px 10px 22px;
 }
 
 .board {
@@ -267,7 +267,7 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 10px;
+  gap: 16px;
   perspective: 1100px;
 }
 
@@ -276,7 +276,7 @@ button {
   grid-template-columns: var(--cell) var(--cell);
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   height: var(--cell);
   overflow: visible;
   transition:
@@ -306,22 +306,14 @@ button {
   cursor: pointer;
   width: var(--cell);
   height: var(--cell);
-  border-radius: 26px;
   overflow: visible;
   perspective: 900px;
-  transform: scale(1);
-  transform-style: preserve-3d;
   -webkit-appearance: none;
   appearance: none;
   touch-action: manipulation;
   transition:
     width 0.5s cubic-bezier(0.22, 0.82, 0.2, 1),
-    height 0.5s cubic-bezier(0.22, 0.82, 0.2, 1),
-    transform 0.2s var(--press);
-}
-
-.cell.is-press:not(.win):not(.bomb) {
-  transform: scale(0.94);
+    height 0.5s cubic-bezier(0.22, 0.82, 0.2, 1);
 }
 
 .cell-3d {
@@ -341,62 +333,15 @@ button {
 .cell-face {
   position: absolute;
   inset: 0;
-  border-radius: 26px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  background:
-    radial-gradient(120% 90% at 50% 12%, rgba(255, 255, 255, 0.07), transparent 44%),
-    linear-gradient(180deg, #1b1e27 0%, #0b0c10 100%);
-  box-shadow:
-    inset 0 2px 4px rgba(255, 255, 255, 0.08),
-    inset 0 -4px 6px rgba(0, 0, 0, 0.8),
-    0 10px 20px rgba(0, 0, 0, 0.6);
+  border-radius: 22px;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-}
-
-.cell-front::after {
-  content: "";
-  position: absolute;
-  inset: 18%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(190, 198, 214, 0.28) 0%, rgba(140, 150, 170, 0.06) 42%, transparent 70%);
-  opacity: 0;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  transition: opacity 0.3s ease;
-}
-
-.cell.hint .cell-front::after {
-  opacity: 1;
-  animation: pulseHint 1.6s ease-in-out infinite;
-}
-
-.cell.is-press:not(.win):not(.bomb) .cell-front {
-  box-shadow:
-    inset 0 4px 8px rgba(0, 0, 0, 0.78),
-    inset 0 -2px 3px rgba(255, 255, 255, 0.05),
-    0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .cell-back {
   transform: rotateY(180deg);
   display: grid;
   place-items: center;
-}
-
-.cell.win .cell-back {
-  background:
-    radial-gradient(80% 80% at 50% 42%, #103324 0%, #07140e 72%);
-  border-color: rgba(0, 229, 117, 0.28);
-  box-shadow:
-    inset 0 2px 4px rgba(160, 255, 200, 0.12),
-    inset 0 -4px 6px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(0, 229, 117, 0.4),
-    0 10px 20px rgba(0, 0, 0, 0.6);
-}
-
-.cell.win {
-  box-shadow: 0 0 22px rgba(0, 229, 117, 0.38);
 }
 
 .cell-mark {
@@ -409,11 +354,7 @@ button {
 
 .cell.win .cell-mark {
   opacity: 1;
-  border: 7px solid #7dffb0;
-  box-shadow:
-    0 0 12px var(--neon),
-    0 0 28px rgba(0, 229, 117, 0.55),
-    inset 0 0 14px rgba(0, 229, 117, 0.35);
+  border: 7px solid #00ff85;
   animation: winPulse 0.45s 0.12s var(--press) both;
 }
 

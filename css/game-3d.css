@@ -1,0 +1,217 @@
+/* 3D neumorphism + iOS Liquid Crystal Glass
+   Loaded AFTER css/style.css so these tokens win over layout chrome.
+   No Tailwind in this project; rules stay unlayered for cascade priority. */
+
+.crystal-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(18, 20, 28, 0.65) 100%);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.8),
+    0 16px 32px -8px rgba(0, 0, 0, 0.85);
+  border-radius: 20px;
+}
+
+.pad-3d-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #2a2d3b 0%, #171922 45%, #0a0b0e 100%);
+  padding: 3px 3px 12px 3px;
+  box-shadow:
+    0 16px 28px rgba(0, 0, 0, 0.9),
+    0 6px 10px rgba(0, 0, 0, 0.6);
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  cursor: pointer;
+}
+
+.pad-3d-container:active,
+.pad-3d-container.pressed {
+  transform: translateY(6px);
+  padding-bottom: 6px;
+  box-shadow:
+    0 8px 14px rgba(0, 0, 0, 0.95),
+    0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.pad-3d-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  background: radial-gradient(circle at 50% 30%, #1d1f2a 0%, #111218 80%, #0a0b0e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    inset 0 8px 14px rgba(0, 0, 0, 0.95),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.04),
+    0 1px 2px rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.pad-3d-container.active .pad-3d-inner {
+  background: radial-gradient(circle at 50% 40%, #ffffff 0%, #d0d7e5 30%, #3e4457 75%, #181a23 100%);
+  box-shadow:
+    inset 0 0 25px rgba(255, 255, 255, 0.95),
+    inset 0 4px 10px rgba(255, 255, 255, 1),
+    0 0 30px rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.pad-3d-container.active .pad-3d-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.3) 1.2px, transparent 0);
+  background-size: 4px 4px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.neon-green-glow {
+  background: linear-gradient(180deg, #00FF85 0%, #00B85c 100%);
+  box-shadow:
+    0 0 20px rgba(0, 255, 133, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  color: #000;
+  font-weight: 700;
+}
+
+.neon-text-green {
+  color: #00FF85;
+  text-shadow: 0 0 12px rgba(0, 255, 133, 0.45);
+}
+
+/* --- integration: bind tokens to the mines board without lowering specificity --- */
+
+.app .cell.pad-3d-container {
+  width: var(--cell);
+  height: var(--cell);
+  flex: 0 0 auto;
+  perspective: 900px;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  overflow: visible;
+}
+
+.app .cell.pad-3d-container.win,
+.app .cell.pad-3d-container.bomb {
+  cursor: default;
+}
+
+.app .cell.pad-3d-container.win:active,
+.app .cell.pad-3d-container.bomb:active,
+.app .cell.pad-3d-container.win.pressed,
+.app .cell.pad-3d-container.bomb.pressed {
+  transform: none;
+  padding-bottom: 12px;
+  box-shadow:
+    0 16px 28px rgba(0, 0, 0, 0.9),
+    0 6px 10px rgba(0, 0, 0, 0.6);
+}
+
+.app .cell .pad-3d-inner {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.app .cell-3d {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.app .cell-face {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 22px;
+}
+
+.app .cell.hint .cell-front::after {
+  display: none;
+}
+
+.app .cell.win .cell-back {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.app .cell.win {
+  box-shadow:
+    0 16px 28px rgba(0, 0, 0, 0.9),
+    0 0 28px rgba(0, 255, 133, 0.35);
+}
+
+.app .cell.win .cell-mark {
+  border-color: #00FF85;
+  box-shadow:
+    0 0 12px rgba(0, 255, 133, 0.85),
+    0 0 28px rgba(0, 255, 133, 0.45),
+    inset 0 0 14px rgba(0, 255, 133, 0.35);
+  z-index: 2;
+}
+
+.app .hash.crystal-glass,
+.app .total-win.crystal-glass,
+.app .prompt.crystal-glass,
+.app .vault-body.crystal-glass {
+  overflow: visible;
+}
+
+.app .hash.crystal-glass {
+  border-radius: 20px;
+}
+
+.app .total-win.crystal-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(18, 20, 28, 0.65) 100%);
+}
+
+.app .total-win.crystal-glass.lit {
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 255, 133, 0.5);
+}
+
+.app .topnav-body.crystal-glass {
+  border-radius: 0;
+}
+
+.app .nav-btn.crystal-glass {
+  border-radius: 14px;
+  width: 44px;
+  height: 40px;
+}
+
+.app .play-bar .side-btn.crystal-glass {
+  border-radius: 16px;
+}
+
+.app .deposit.neon-green-glow,
+.app .again.neon-green-glow,
+.app .play-btn.neon-green-glow {
+  border: 0;
+}
+
+.app .play-btn.neon-green-glow svg {
+  fill: #000;
+}
+
+.app .balance.neon-text-green,
+.app .hash-step.is-current.neon-text-green,
+.app .hash-step .payout.neon-text-green,
+.app .total-win.lit .total-val.neon-text-green,
+.app .win-copy.neon-text-green {
+  color: #00FF85;
+}
