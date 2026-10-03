@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0c0d12">
+  <title>Mines</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <canvas class="fx" id="fx" aria-hidden="true"></canvas>
+
+    <header class="header">
+      <img class="header-img" src="assets/header-bar.png" alt="">
+      <button class="hotspot hotspot-menu" type="button" aria-label="Меню"></button>
+      <button class="hotspot hotspot-music" type="button" id="musicBtn" aria-label="Музыка"></button>
+    </header>
+
+    <div class="dots" id="dots" hidden>
+      <span></span><span></span><span></span>
+    </div>
+
+    <section class="vault" id="vault" hidden>
+      <div class="vault-body">
+        <div class="vault-screen" id="vaultScreen">
+          <div class="win-copy" id="winCopy">
+            <div class="win-en">YOU WIN</div>
+            <div class="win-ru">ПОБЕДА</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="stage" id="stage">
+      <div class="board" id="board">
+        <div class="row" data-row="0">
+          <button class="cell" type="button" data-i="0" aria-label="Клетка 1"></button>
+          <button class="cell" type="button" data-i="1" aria-label="Клетка 2"></button>
+        </div>
+        <div class="row" data-row="1">
+          <button class="cell" type="button" data-i="2" aria-label="Клетка 3"></button>
+          <button class="cell" type="button" data-i="3" aria-label="Клетка 4"></button>
+        </div>
+        <div class="row" data-row="2">
+          <button class="cell" type="button" data-i="4" aria-label="Клетка 5"></button>
+          <button class="cell" type="button" data-i="5" aria-label="Клетка 6"></button>
+        </div>
+      </div>
+    </main>
+
+    <p class="prompt" id="prompt">Выбери сумму ставки и нажми <span class="prompt-play">▶</span></p>
+
+    <div class="hash" id="hash" hidden>
+      <div class="hash-left">
+        <span class="hash-mark"></span>
+        <span class="hash-title">Hash</span>
+      </div>
+      <div class="hash-steps" id="hashSteps"></div>
+      <div class="hash-glow"></div>
+    </div>
+
+    <section class="controls" id="controls">
+      <div class="idle-bar" id="idleBar">
+        <div class="size-chip">2x3</div>
+        <div class="stake">
+          <button class="step" type="button" id="betMinus" aria-label="Меньше">−</button>
+          <div class="stake-mid">
+            <div class="stake-val"><span id="betLabel">5000</span> RUB</div>
+            <div class="stake-sub">баланс: <span id="idleBalance">291020.11</span> RUB</div>
+          </div>
+          <button class="step" type="button" id="betPlus" aria-label="Больше">+</button>
+        </div>
+        <button class="play-btn" type="button" id="playBtn" aria-label="Старт">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l12-6.5L8 5.5z"/></svg>
+        </button>
+      </div>
+
+      <div class="play-bar" id="playBar" hidden>
+        <button class="side-btn" type="button" aria-label="Кубик">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="9" cy="9" r="1.2" fill="currentColor"/>
+            <circle cx="15" cy="9" r="1.2" fill="currentColor"/>
+            <circle cx="9" cy="15" r="1.2" fill="currentColor"/>
+            <circle cx="15" cy="15" r="1.2" fill="currentColor"/>
+          </svg>
+        </button>
+        <div class="total-win" id="totalWinBox">
+          <div class="total-val" id="totalWin">0 RUB</div>
+          <div class="total-sub">Общий выигрыш</div>
+        </div>
+        <button class="side-btn cash" type="button" id="cashBtn" aria-label="Забрать">$</button>
+      </div>
+    </section>
+
+    <button class="again" type="button" id="againBtn" hidden>Ещё раз</button>
+
+    <footer class="footer">
+      <button class="back" type="button" id="backBtn">‹ Назад</button>
+      <div class="balance" id="footerBalance">291 020,11 ₽</div>
+      <button class="deposit" type="button" id="depositBtn">Пополнить</button>
+    </footer>
+  </div>
+
+  <script src="js/game.js"></script>
+</body>
+</html>
