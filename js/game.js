@@ -5,6 +5,14 @@
   const BET_STEP = 500;
   const MIN_BET = 500;
 
+  const bombSvg = `
+    <svg class="bomb-outline" viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="30" cy="40" r="16.5" fill="none" stroke="#6a6f7a" stroke-width="2.8"/>
+      <rect x="26" y="21" width="8" height="5" rx="1" fill="#6a6f7a"/>
+      <path d="M34 23c7-8 14-11 18-12" fill="none" stroke="#6a6f7a" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M52 8l3-4m1 5l3-2m-8-1l-2-3" fill="none" stroke="#6a6f7a" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>`;
+
   const $ = (id) => document.getElementById(id);
   const app = $("app");
   const boardEl = $("board");
@@ -12,7 +20,6 @@
   const rows = [...boardEl.querySelectorAll(".row")];
   const vault = $("vault");
   const dots = $("dots");
-  const hash = $("hash");
   const hashSteps = $("hashSteps");
   const prompt = $("prompt");
   const idleBar = $("idleBar");
@@ -20,8 +27,9 @@
   const againBtn = $("againBtn");
   const totalWinBox = $("totalWinBox");
   const totalWinEl = $("totalWin");
-  const fx = $("fx");
-  const ctx = fx.getContext("2d");
+  const fxDom = $("fxDom");
+
+  cells.forEach((cell) => cell.insertAdjacentHTML("beforeend", bombSvg));
 
   const state = {
     mode: "idle",
@@ -29,21 +37,15 @@
     bet: 5000,
     round: 0,
     busy: false,
-    particles: [],
-    raf: 0,
   };
 
   const fmtMoney = (n) =>
     n.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
   const fmtInt = (n) => Math.round(n).toString();
-
-  const payoutAt = (roundIndex) => state.bet * MULTS[roundIndex];
-
+  const payoutAt = (i) => state.bet * MULTS[i];
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const haptic = () => {
-    try {
-      navigator.vibrate?.(12);
-    } catch (_) {}
+    try { navigator.vibrate?.(12); } catch (_) {}
   };
 
   function setBalanceView() {
@@ -62,13 +64,10 @@
     MULTS.forEach((m, i) => {
       if (i < idx) return;
       const el = document.createElement("div");
-      el.className = "hash-step";
-      if (i === idx) {
-        el.classList.add("is-current");
-        el.innerHTML = `<span class="payout">${fmtInt(payoutAt(i))}</span><span>${m.toFixed(2)}x</span>`;
-      } else {
-        el.innerHTML = `<span>${m.toFixed(2)}x</span>`;
-      }
+      el.className = "hash-step" + (i === idx ? " is-current" : "");
+      el.innerHTML = i === idx
+        ? `<span class="payout">${fmtInt(payoutAt(i))}</span><span>${m.toFixed(2)}x</span>`
+        : `<span>${m.toFixed(2)}x</span>`;
       hashSteps.appendChild(el);
     });
   }
@@ -84,8 +83,7 @@
 
   function applyShift() {
     if (state.round >= 1 && state.round < 3) {
-      const spentRow = 3 - state.round;
-      rows[spentRow].classList.add("spent");
+      rows[3 - state.round].classList.add("spent");
     }
   }
 
@@ -102,8 +100,6 @@
     cells
       .filter((c) => Number(c.dataset.i) === row * 2 || Number(c.dataset.i) === row * 2 + 1)
       .forEach((c) => c.classList.add("hint"));
-    const preferred = cells[HINTS[state.round]];
-    if (preferred) preferred.classList.add("hint");
   }
 
   function setMode(mode) {
@@ -113,20 +109,50 @@
     prompt.hidden = mode !== "idle";
     idleBar.hidden = mode !== "idle";
     playBar.hidden = mode === "idle";
-    hash.hidden = mode === "idle";
-    dots.hidden = mode === "idle";
     againBtn.hidden = mode !== "win";
     if (mode === "idle") {
-      vault.hidden = true;
-      vault.classList.remove("won");
+      vault.classList.remove("is-open", "won");
+      rows.forEach((row) => row.classList.remove("spent"));
     }
+  }
+
+  let fxTimer = 0;
+
+  function stopFX() {
+    clearInterval(fxTimer);
+    fxDom.innerHTML = "";
+  }
+
+  function startFX() {
+    stopFX();
+    const burst = () => {
+      const appBox = app.getBoundingClientRect();
+      const vaultBox = vault.getBoundingClientRect();
+      const ox = vaultBox.left + vaultBox.width / 2 - appBox.left;
+      const oy = vaultBox.top + vaultBox.height * 0.42 - appBox.top;
+      for (let i = 0; i < 14; i++) {
+        const el = document.createElement("div");
+        const bill = Math.random() < 0.48;
+        el.className = "spark " + (bill ? "bill" : "coin");
+        if (bill) el.textContent = "$";
+        el.style.left = `${ox}px`;
+        el.style.top = `${oy}px`;
+        el.style.setProperty("--dx", `${(Math.random() - 0.5) * 280}px`);
+        el.style.setProperty("--dy", `${140 + Math.random() * 380}px`);
+        el.style.setProperty("--rot", `${Math.random() * 640 - 320}deg`);
+        el.style.animationDuration = `${2.2 + Math.random() * 1.2}s`;
+        el.addEventListener("animationend", () => el.remove());
+        fxDom.appendChild(el);
+      }
+    };
+    burst();
+    fxTimer = setInterval(burst, 420);
   }
 
   function resetBoard(keepBalance) {
     state.round = 0;
     state.busy = false;
     if (!keepBalance) state.balance = START_BALANCE;
-    rows.forEach((row) => row.classList.remove("spent"));
     clearCells();
     setTotalWin(0, false);
     setDots();
@@ -145,8 +171,7 @@
     state.busy = false;
     setBalanceView();
     setMode("playing");
-    vault.hidden = true;
-    vault.classList.remove("won");
+    vault.classList.remove("is-open", "won");
     rows.forEach((row) => row.classList.remove("spent"));
     clearCells();
     setTotalWin(0, false);
@@ -164,10 +189,9 @@
     setTotalWin(prize, true);
     renderHash();
     setDots();
-    vault.hidden = false;
-    vault.classList.add("won");
-    againBtn.hidden = false;
+    vault.classList.add("is-open", "won");
     startFX();
+    setTimeout(() => { againBtn.hidden = false; }, 1600);
   }
 
   async function onCellClick(ev) {
@@ -183,29 +207,26 @@
     cells.forEach((c) => c.classList.remove("hint"));
 
     const col = i % 2;
-    const sibling = cells[row * 2 + (col === 0 ? 1 : 0)];
+    const sibling = cells[row * 2 + (1 - col)];
     cell.classList.add("win");
     if (sibling) sibling.classList.add("bomb");
 
     state.round += 1;
     setDots();
     renderHash();
-    setTotalWin(payoutAt(state.round - 1), state.round > 0);
+    setTotalWin(payoutAt(state.round - 1), true);
 
-    await wait(700);
+    await wait(850);
 
-    if (state.round === 1) {
-      vault.hidden = false;
-    }
+    if (state.round === 1) vault.classList.add("is-open");
 
     if (state.round < 3) {
       applyShift();
-      await wait(650);
+      await wait(720);
       showHints();
       state.busy = false;
     } else {
-      applyShift();
-      await wait(400);
+      await wait(280);
       finishWin();
     }
   }
@@ -217,142 +238,28 @@
     setBalanceView();
   }
 
-  function wait(ms) {
-    return new Promise((r) => setTimeout(r, ms));
-  }
-
-  function resizeFx() {
-    const r = app.getBoundingClientRect();
-    fx.width = Math.floor(r.width * devicePixelRatio);
-    fx.height = Math.floor(r.height * devicePixelRatio);
-  }
-
-  function startFX() {
-    document.querySelectorAll(".coin-rain").forEach((n) => n.remove());
-    const rain = document.createElement("div");
-    rain.className = "coin-rain";
-    for (let i = 0; i < 28; i++) {
-      const s = document.createElement("span");
-      s.className = Math.random() < 0.55 ? "coin" : "bill";
-      s.style.left = `${16 + Math.random() * 68}%`;
-      s.style.animationDelay = `${Math.random() * 0.7}s`;
-      s.style.animationDuration = `${1.7 + Math.random() * 1.5}s`;
-      rain.appendChild(s);
-    }
-    app.appendChild(rain);
-
-    resizeFx();
-    const dpr = devicePixelRatio || 1;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const W = fx.clientWidth;
-    const H = fx.clientHeight;
-    state.particles = [];
-    const spawn = (n) => {
-      for (let i = 0; i < n; i++) {
-        state.particles.push({
-          kind: Math.random() < 0.55 ? "coin" : "bill",
-          x: W * (0.22 + Math.random() * 0.56),
-          y: H * (0.16 + Math.random() * 0.08),
-          r: 9 + Math.random() * 14,
-          vy: 1.4 + Math.random() * 3.2,
-          vx: (Math.random() - 0.5) * 2.2,
-          rot: Math.random() * Math.PI,
-          vr: (Math.random() - 0.5) * 0.16,
-          life: 1,
-        });
-      }
-    };
-    spawn(80);
-    let extra = 0;
-    cancelAnimationFrame(state.raf);
-    const tick = () => {
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, W, H);
-      extra += 1;
-      if (extra % 8 === 0 && extra < 120) spawn(4);
-      for (const p of state.particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.rot += p.vr;
-        p.vy += 0.045;
-        p.life -= 0.0035;
-        drawParticle(p);
-      }
-      state.particles = state.particles.filter((p) => p.life > 0 && p.y < H + 40);
-      if (state.particles.length) state.raf = requestAnimationFrame(tick);
-    };
-    tick();
-  }
-
-  function drawParticle(p) {
-    ctx.save();
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.rot);
-    ctx.globalAlpha = Math.max(0, p.life);
-    ctx.strokeStyle = "#c8ff74";
-    ctx.fillStyle = "rgba(90,255,120,0.16)";
-    ctx.lineWidth = 2.2;
-    ctx.shadowColor = "#7CFF4A";
-    ctx.shadowBlur = 16;
-    if (p.kind === "coin") {
-      ctx.beginPath();
-      ctx.arc(0, 0, p.r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-    } else {
-      const w = p.r * 1.9;
-      const h = p.r * 1.15;
-      roundRect(-w / 2, -h / 2, w, h, 4);
-      ctx.fill();
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  function roundRect(x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
-  }
-
-  function stopFX() {
-    cancelAnimationFrame(state.raf);
-    ctx.clearRect(0, 0, fx.width, fx.height);
-    state.particles = [];
-    document.querySelectorAll(".coin-rain").forEach((n) => n.remove());
-  }
-
   cells.forEach((c) => c.addEventListener("click", onCellClick));
   $("playBtn").addEventListener("click", startGame);
   $("betMinus").addEventListener("click", () => changeBet(-1));
   $("betPlus").addEventListener("click", () => changeBet(1));
   $("againBtn").addEventListener("click", () => resetBoard(true));
   $("backBtn").addEventListener("click", () => {
-    if (state.mode === "playing") {
-      state.balance += state.bet;
-    }
+    if (state.mode === "playing") state.balance += state.bet;
     resetBoard(true);
   });
   $("depositBtn").addEventListener("click", () => {
-    $("depositBtn").animate([{ transform: "scale(1)" }, { transform: "scale(0.94)" }, { transform: "scale(1)" }], 180);
+    $("depositBtn").animate(
+      [{ transform: "scale(1)" }, { transform: "scale(0.94)" }, { transform: "scale(1)" }],
+      180
+    );
   });
   $("cashBtn").addEventListener("click", () => {
     if (state.mode === "win") resetBoard(true);
   });
-  $("musicBtn").addEventListener("click", () => {
-    $("musicBtn").classList.toggle("off");
-  });
 
-  window.addEventListener("resize", () => {
-    resizeFx();
-  });
+  window.addEventListener("resize", () => {});
 
   setMode("idle");
   setBalanceView();
   renderHash();
-  resizeFx();
 })();

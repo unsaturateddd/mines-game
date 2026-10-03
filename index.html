@@ -3,58 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0c0d12">
+  <meta name="theme-color" content="#12141a">
   <title>Mines</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="app" id="app">
-    <canvas class="fx" id="fx" aria-hidden="true"></canvas>
+  <div class="app is-idle" id="app">
+    <div class="fx-dom" id="fxDom" aria-hidden="true"></div>
 
-    <header class="header">
-      <img class="header-img" src="assets/header-bar.png" alt="">
-      <button class="hotspot hotspot-menu" type="button" aria-label="Меню"></button>
-      <button class="hotspot hotspot-music" type="button" id="musicBtn" aria-label="Музыка"></button>
+    <header class="topnav">
+      <div class="topnav-body">
+        <span class="topnav-gloss"></span>
+        <button class="nav-btn" type="button" aria-label="Меню">
+          <span class="grid-ico"></span>
+        </button>
+        <img class="bomb-logo" src="assets/bomb-logo.png" alt="">
+        <button class="nav-btn" type="button" id="musicBtn" aria-label="Музыка">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 16.5V6l10-2v10.5a3.5 3.5 0 1 1-2-3.16V6.7L12 8.3v8.2a3.5 3.5 0 1 1-2 0z"/></svg>
+        </button>
+      </div>
     </header>
 
-    <div class="dots" id="dots" hidden>
+    <div class="dots" id="dots">
       <span></span><span></span><span></span>
     </div>
 
-    <section class="vault" id="vault" hidden>
-      <div class="vault-body">
-        <div class="vault-screen" id="vaultScreen">
-          <div class="win-copy" id="winCopy">
-            <div class="win-en">YOU WIN</div>
-            <div class="win-ru">ПОБЕДА</div>
+    <div class="field">
+      <section class="vault" id="vault">
+        <div class="vault-body">
+          <div class="vault-screen">
+            <div class="win-copy" id="winCopy">YOU WIN</div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <main class="stage" id="stage">
-      <div class="board" id="board">
-        <div class="row" data-row="0">
-          <button class="cell" type="button" data-i="0" aria-label="Клетка 1"></button>
-          <button class="cell" type="button" data-i="1" aria-label="Клетка 2"></button>
+      <main class="viewport" id="viewport">
+        <div class="board" id="board">
+          <div class="row" data-row="0">
+            <button class="cell" type="button" data-i="0" aria-label="Клетка 1"></button>
+            <button class="cell" type="button" data-i="1" aria-label="Клетка 2"></button>
+          </div>
+          <div class="row" data-row="1">
+            <button class="cell" type="button" data-i="2" aria-label="Клетка 3"></button>
+            <button class="cell" type="button" data-i="3" aria-label="Клетка 4"></button>
+          </div>
+          <div class="row" data-row="2">
+            <button class="cell" type="button" data-i="4" aria-label="Клетка 5"></button>
+            <button class="cell" type="button" data-i="5" aria-label="Клетка 6"></button>
+          </div>
         </div>
-        <div class="row" data-row="1">
-          <button class="cell" type="button" data-i="2" aria-label="Клетка 3"></button>
-          <button class="cell" type="button" data-i="3" aria-label="Клетка 4"></button>
-        </div>
-        <div class="row" data-row="2">
-          <button class="cell" type="button" data-i="4" aria-label="Клетка 5"></button>
-          <button class="cell" type="button" data-i="5" aria-label="Клетка 6"></button>
-        </div>
-      </div>
-    </main>
+      </main>
+    </div>
 
     <p class="prompt" id="prompt">Выбери сумму ставки и нажми <span class="prompt-play">▶</span></p>
 
-    <div class="hash" id="hash" hidden>
+    <div class="hash" id="hash">
       <div class="hash-left">
         <span class="hash-mark"></span>
         <span class="hash-title">Hash</span>
+        <span class="hash-x">x</span>
       </div>
       <div class="hash-steps" id="hashSteps"></div>
       <div class="hash-glow"></div>
@@ -78,12 +85,9 @@
 
       <div class="play-bar" id="playBar" hidden>
         <button class="side-btn" type="button" aria-label="Кубик">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
-            <circle cx="9" cy="9" r="1.2" fill="currentColor"/>
-            <circle cx="15" cy="9" r="1.2" fill="currentColor"/>
-            <circle cx="9" cy="15" r="1.2" fill="currentColor"/>
-            <circle cx="15" cy="15" r="1.2" fill="currentColor"/>
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M16 4 L27 10.5 V21.5 L16 28 L5 21.5 V10.5 Z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M16 4 V28 M5 10.5 L16 17 L27 10.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
           </svg>
         </button>
         <div class="total-win" id="totalWinBox">
